@@ -1,17 +1,36 @@
 # API Quick Reference
 
-Base URL: `http://localhost:3000/api`
+Base URL: `http://localhost:3000`
+
+## 🤖 AI Analysis Endpoints (NEW!)
+
+| Method | Endpoint                | Description                   | Example                     |
+| ------ | ----------------------- | ----------------------------- | --------------------------- |
+| POST   | `/ai-analysis/generate` | Generate analysis notebook    | See body below              |
+| GET    | `/ai-analysis/files`    | List generated files          | `GET /ai-analysis/files`    |
+| GET    | `/ai-analysis/examples` | Get example analysis requests | `GET /ai-analysis/examples` |
+
+### Generate Analysis Request Body
+
+```json
+{
+  "analysisType": "consumers",
+  "description": "Analyze consumer spending patterns and create visualizations including bar charts of top spenders, geographic distribution heatmap, and statistical summary of spending trends"
+}
+```
+
+**Analysis Types**: `consumers`, `orders`, `products`, `analytics`, `custom`
 
 ## Products Endpoints
 
-| Method | Endpoint                   | Description        | Example                                  |
-| ------ | -------------------------- | ------------------ | ---------------------------------------- |
-| GET    | `/products`                | Get all products   | `GET /api/products`                      |
-| GET    | `/products?category={cat}` | Filter by category | `GET /api/products?category=Electronics` |
-| GET    | `/products/:id`            | Get single product | `GET /api/products/42`                   |
-| POST   | `/products`                | Create new product | See body below                           |
-| PUT    | `/products/:id`            | Update product     | See body below                           |
-| DELETE | `/products/:id`            | Delete product     | `DELETE /api/products/42`                |
+| Method | Endpoint                   | Description        | Example                              |
+| ------ | -------------------------- | ------------------ | ------------------------------------ |
+| GET    | `/products`                | Get all products   | `GET /products`                      |
+| GET    | `/products?category={cat}` | Filter by category | `GET /products?category=Electronics` |
+| GET    | `/products/:id`            | Get single product | `GET /products/42`                   |
+| POST   | `/products`                | Create new product | See body below                       |
+| PUT    | `/products/:id`            | Update product     | See body below                       |
+| DELETE | `/products/:id`            | Delete product     | `DELETE /products/42`                |
 
 ### Product Categories
 

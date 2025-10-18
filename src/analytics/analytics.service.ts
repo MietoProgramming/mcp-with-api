@@ -1,4 +1,4 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { ConsumersService } from '../consumers/consumers.service';
 import { OrdersService } from '../orders/orders.service';
 import { ProductsService } from '../products/products.service';
@@ -44,6 +44,8 @@ export interface PredictionSummary {
 
 @Injectable()
 export class AnalyticsService {
+  private readonly logger = new Logger(AnalyticsService.name);
+
   constructor(
     @Inject(forwardRef(() => OrdersService))
     private ordersService: OrdersService,
@@ -51,7 +53,9 @@ export class AnalyticsService {
     private consumersService: ConsumersService,
     @Inject(forwardRef(() => ProductsService))
     private productsService: ProductsService,
-  ) {}
+  ) {
+    this.logger.log('Initializing Analytics Service');
+  }
 
   /**
    * Calculate RFM (Recency, Frequency, Monetary) score for a consumer
@@ -270,8 +274,11 @@ export class AnalyticsService {
    * Get complete behavior analysis for a consumer
    */
   analyzeConsumerBehavior(consumerId: number): ConsumerBehaviorScore | null {
+    this.logger.debug(`Analyzing consumer behavior for ID: ${consumerId}`);
+
     const consumer = this.consumersService.findOne(consumerId);
     if (!consumer) {
+      this.logger.warn(`Consumer not found: ${consumerId}`);
       return null;
     }
 
@@ -281,6 +288,10 @@ export class AnalyticsService {
       consumerId,
       rfmScore,
       purchasePattern,
+    );
+
+    this.logger.log(
+      `Consumer ${consumerId} analyzed - Reorder probability: ${(reorderPrediction.probability * 100).toFixed(1)}%, Total score: ${rfmScore.totalScore}`,
     );
 
     return {
@@ -296,10 +307,17 @@ export class AnalyticsService {
    * Get predictions for all consumers
    */
   getAllConsumerPredictions(): ConsumerBehaviorScore[] {
+    this.logger.debug('Getting predictions for all consumers');
+
     const consumers = this.consumersService.findAll();
-    return consumers
+    const predictions = consumers
       .map((consumer) => this.analyzeConsumerBehavior(consumer.id))
       .filter((score): score is ConsumerBehaviorScore => score !== null);
+
+    this.logger.log(
+      `Generated predictions for ${predictions.length} consumers`,
+    );
+    return predictions;
   }
 
   /**

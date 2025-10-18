@@ -1,5 +1,11 @@
 import { faker } from '@faker-js/faker';
-import { Inject, Injectable, OnModuleInit, forwardRef } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  OnModuleInit,
+  forwardRef,
+} from '@nestjs/common';
 import { ConsumersService } from '../consumers/consumers.service';
 
 export interface Order {
@@ -15,6 +21,7 @@ export interface Order {
 
 @Injectable()
 export class OrdersService implements OnModuleInit {
+  private readonly logger = new Logger(OrdersService.name);
   private orders: Order[] = [];
 
   // We'll need these to be injected after products and consumers are generated
@@ -27,11 +34,12 @@ export class OrdersService implements OnModuleInit {
   ) {}
 
   onModuleInit() {
+    this.logger.log('Initializing Orders Service');
     // Delay order generation slightly to ensure products and consumers are ready
     setTimeout(() => {
       this.generateOrders(10000);
       this.updateConsumerStatistics();
-      console.log(`Generated ${this.orders.length} orders`);
+      this.logger.log(`Generated ${this.orders.length} orders`);
     }, 100);
   }
 
@@ -83,15 +91,24 @@ export class OrdersService implements OnModuleInit {
   }
 
   findAll(): Order[] {
+    this.logger.debug(`Fetching all orders (${this.orders.length} total)`);
     return this.orders;
   }
 
   findOne(id: number): Order | undefined {
+    this.logger.debug(`Fetching order ID: ${id}`);
     return this.orders.find((order) => order.id === id);
   }
 
   findByConsumer(consumerId: number): Order[] {
-    return this.orders.filter((order) => order.consumerId === consumerId);
+    this.logger.debug(`Fetching orders for consumer ID: ${consumerId}`);
+    const orders = this.orders.filter(
+      (order) => order.consumerId === consumerId,
+    );
+    this.logger.debug(
+      `Found ${orders.length} orders for consumer ${consumerId}`,
+    );
+    return orders;
   }
 
   findByProduct(productId: number): Order[] {

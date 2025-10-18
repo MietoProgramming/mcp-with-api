@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 
 export interface Product {
   id: number;
@@ -13,6 +13,7 @@ export interface Product {
 
 @Injectable()
 export class ProductsService implements OnModuleInit {
+  private readonly logger = new Logger(ProductsService.name);
   private products: Product[] = [];
 
   private readonly categories = [
@@ -29,8 +30,9 @@ export class ProductsService implements OnModuleInit {
   ];
 
   onModuleInit() {
+    this.logger.log('Initializing Products Service');
     this.generateProducts(500);
-    console.log(`Generated ${this.products.length} products`);
+    this.logger.log(`Generated ${this.products.length} products`);
   }
 
   private generateProducts(count: number): void {
@@ -60,17 +62,24 @@ export class ProductsService implements OnModuleInit {
   }
 
   findAll(): Product[] {
+    this.logger.debug(`Fetching all products (${this.products.length} total)`);
     return this.products;
   }
 
   findOne(id: number): Product | undefined {
+    this.logger.debug(`Fetching product ID: ${id}`);
     return this.products.find((product) => product.id === id);
   }
 
   findByCategory(category: string): Product[] {
-    return this.products.filter(
+    this.logger.debug(`Fetching products in category: ${category}`);
+    const products = this.products.filter(
       (product) => product.category.toLowerCase() === category.toLowerCase(),
     );
+    this.logger.debug(
+      `Found ${products.length} products in category ${category}`,
+    );
+    return products;
   }
 
   create(product: Omit<Product, 'id' | 'createdAt'>): Product {

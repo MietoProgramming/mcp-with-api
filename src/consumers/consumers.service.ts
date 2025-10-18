@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 
 export interface Consumer {
   id: number;
@@ -15,11 +15,13 @@ export interface Consumer {
 
 @Injectable()
 export class ConsumersService implements OnModuleInit {
+  private readonly logger = new Logger(ConsumersService.name);
   private consumers: Consumer[] = [];
 
   onModuleInit() {
+    this.logger.log('Initializing Consumers Service');
     this.generateConsumers(100);
-    console.log(`Generated ${this.consumers.length} consumers`);
+    this.logger.log(`Generated ${this.consumers.length} consumers`);
   }
 
   private generateConsumers(count: number): void {
@@ -60,10 +62,14 @@ export class ConsumersService implements OnModuleInit {
   }
 
   findAll(): Consumer[] {
+    this.logger.debug(
+      `Fetching all consumers (${this.consumers.length} total)`,
+    );
     return this.consumers;
   }
 
   findOne(id: number): Consumer | undefined {
+    this.logger.debug(`Fetching consumer ID: ${id}`);
     return this.consumers.find((consumer) => consumer.id === id);
   }
 

@@ -23,13 +23,49 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+MCP with API - A comprehensive e-commerce analytics API built with NestJS, featuring:
+
+- **Mock Data Generation**: 500 products, 100 consumers, 10,000 orders
+- **Analytics & Predictions**: RFM analysis, customer behavior scoring, reorder predictions
+- **AI-Powered Analysis**: Generate Python Jupyter notebooks for data analysis using AI
+- **MCP Server**: Model Context Protocol integration for AI assistants
+- **RESTful API**: Full CRUD operations and advanced filtering
+
+## ✨ New Feature: AI-Powered Data Analysis
+
+Generate Python Jupyter notebooks with AI-powered data analysis code!
+
+**Quick Start:**
+
+```bash
+# 1. Install dependencies
+yarn install
+
+# 2. Setup environment variables
+copy .env.example .env
+# Edit .env and add your OpenRouter API key
+
+# 3. Start the server
+yarn start:dev
+
+# 4. Generate analysis
+curl -X POST http://localhost:3000/api/ai-analysis/generate -H "Content-Type: application/json" -d "{\"analysisType\": \"consumers\", \"description\": \"Analyze consumer spending patterns\"}"
+```
+
+📚 **Full Documentation**: See `AI_ANALYSIS_QUICKSTART.md` and `AI_ANALYSIS_DOCUMENTATION.md`
 
 ## Project setup
 
 ```bash
+# 1. Install dependencies
 $ yarn install
+
+# 2. Setup environment (copy and edit .env file)
+$ copy .env.example .env
+# Add your OPENROUTER_API_KEY to the .env file
 ```
+
+📖 **Environment Setup Guide**: See `ENVIRONMENT_SETUP.md` for detailed configuration
 
 ## Compile and run the project
 
@@ -69,6 +105,51 @@ $ mau deploy
 ```
 
 With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+
+## 📡 API Endpoints
+
+### AI Analysis (NEW!)
+
+- `POST /ai-analysis/generate` - Generate AI-powered analysis notebook
+- `GET /ai-analysis/files` - List generated files
+- `GET /ai-analysis/examples` - Get example requests
+
+### Analytics & Predictions
+
+- `GET /analytics/consumer-behavior/:id` - Get consumer behavior analysis
+- `GET /analytics/predictions/all` - Get all reorder predictions
+- `GET /analytics/predictions/summary` - Get prediction summary
+- `GET /analytics/high-value-reorder-candidates` - Get high-value customers
+- `GET /analytics/churn-risk-consumers` - Get at-risk customers
+
+### Consumers
+
+- `GET /consumers` - Get all consumers
+- `GET /consumers/:id` - Get consumer by ID
+- `GET /consumers/top/:limit` - Get top spending consumers
+- `GET /consumers/:id/statistics` - Get consumer statistics
+- `GET /consumers/:id/orders` - Get consumer's orders
+
+### Orders
+
+- `GET /orders` - Get all orders
+- `GET /orders/:id` - Get order by ID
+- `GET /orders/status/:status` - Filter by status
+- `GET /orders/statistics` - Get order statistics
+
+### Products
+
+- `GET /products` - Get all products
+- `GET /products/:id` - Get product by ID
+- `GET /products/category/:category` - Filter by category
+
+## 📚 Documentation
+
+- **[AI Analysis Quick Start](AI_ANALYSIS_QUICKSTART.md)** - 5-minute setup guide
+- **[AI Analysis Full Docs](AI_ANALYSIS_DOCUMENTATION.md)** - Complete documentation
+- **[API Documentation](API_DOCUMENTATION.md)** - Full API reference
+- **[Analytics Guide](ANALYTICS_DOCUMENTATION.md)** - Analytics features
+- **[MCP Setup](MCP_SETUP_GUIDE.md)** - Model Context Protocol setup
 
 ## Resources
 
