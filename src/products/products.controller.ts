@@ -10,13 +10,34 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { Product, ProductsService } from './products.service';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { CreateProductDto, ProductDto, UpdateProductDto } from './product.dto';
+import { ProductsService } from './products.service';
 
+@ApiTags('products')
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
+  @ApiOperation({ summary: 'Get all products or filter by category' })
+  @ApiQuery({
+    name: 'category',
+    required: false,
+    description: 'Filter products by category',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of products',
+    type: [ProductDto],
+  })
   findAll(@Query('category') category?: string) {
     if (category) {
       return this.productsService.findByCategory(category);
@@ -25,6 +46,10 @@ export class ProductsController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get a product by ID' })
+  @ApiParam({ name: 'id', description: 'Product ID' })
+  @ApiResponse({ status: 200, description: 'Product found', type: ProductDto })
+  @ApiResponse({ status: 404, description: 'Product not found' })
   findOne(@Param('id', ParseIntPipe) id: number) {
     const product = this.productsService.findOne(id);
     if (!product) {
@@ -34,14 +59,30 @@ export class ProductsController {
   }
 
   @Post()
-  create(@Body() product: Omit<Product, 'id' | 'createdAt'>) {
+  @ApiOperation({ summary: 'Create a new product' })
+  @ApiBody({ type: CreateProductDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Product created',
+    type: ProductDto,
+  })
+  create(@Body() product: CreateProductDto) {
     return this.productsService.create(product);
   }
 
   @Put(':id')
+  @ApiOperation({ summary: 'Update a product' })
+  @ApiParam({ name: 'id', description: 'Product ID' })
+  @ApiBody({ type: UpdateProductDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Product updated',
+    type: ProductDto,
+  })
+  @ApiResponse({ status: 404, description: 'Product not found' })
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() product: Partial<Product>,
+    @Body() product: UpdateProductDto,
   ) {
     const updated = this.productsService.update(id, product);
     if (!updated) {
@@ -51,6 +92,10 @@ export class ProductsController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete a product' })
+  @ApiParam({ name: 'id', description: 'Product ID' })
+  @ApiResponse({ status: 200, description: 'Product deleted' })
+  @ApiResponse({ status: 404, description: 'Product not found' })
   delete(@Param('id', ParseIntPipe) id: number) {
     const deleted = this.productsService.delete(id);
     if (!deleted) {

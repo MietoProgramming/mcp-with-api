@@ -123,3 +123,4 @@ When creating MCP tools:
 - 🧪 Test changes before committing
 - 📝 Update documentation when adding features
 - 🔧 Use ESLint and Prettier for code formatting
+- don't create .md files with changes unless specifically instructed

@@ -10,13 +10,52 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { Order, OrdersService } from './orders.service';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import {
+  CreateOrderDto,
+  OrderDto,
+  OrderStatisticsDto,
+  UpdateOrderDto,
+} from './order.dto';
+import { OrdersService } from './orders.service';
 
+@ApiTags('orders')
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Get()
+  @ApiOperation({
+    summary: 'Get all orders or filter by consumer/product/status',
+  })
+  @ApiQuery({
+    name: 'consumerId',
+    required: false,
+    description: 'Filter by consumer ID',
+  })
+  @ApiQuery({
+    name: 'productId',
+    required: false,
+    description: 'Filter by product ID',
+  })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    description: 'Filter by order status',
+    enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of orders',
+    type: [OrderDto],
+  })
   findAll(
     @Query('consumerId') consumerId?: string,
     @Query('productId') productId?: string,
@@ -35,11 +74,21 @@ export class OrdersController {
   }
 
   @Get('statistics')
+  @ApiOperation({ summary: 'Get order statistics' })
+  @ApiResponse({
+    status: 200,
+    description: 'Order statistics',
+    type: OrderStatisticsDto,
+  })
   getStatistics() {
     return this.ordersService.getOrderStatistics();
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get an order by ID' })
+  @ApiParam({ name: 'id', description: 'Order ID' })
+  @ApiResponse({ status: 200, description: 'Order found', type: OrderDto })
+  @ApiResponse({ status: 404, description: 'Order not found' })
   findOne(@Param('id', ParseIntPipe) id: number) {
     const order = this.ordersService.findOne(id);
     if (!order) {
@@ -49,12 +98,20 @@ export class OrdersController {
   }
 
   @Post()
-  create(@Body() order: Omit<Order, 'id' | 'orderDate'>) {
+  @ApiOperation({ summary: 'Create a new order' })
+  @ApiBody({ type: CreateOrderDto })
+  @ApiResponse({ status: 201, description: 'Order created', type: OrderDto })
+  create(@Body() order: CreateOrderDto) {
     return this.ordersService.create(order);
   }
 
   @Put(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() order: Partial<Order>) {
+  @ApiOperation({ summary: 'Update an order' })
+  @ApiParam({ name: 'id', description: 'Order ID' })
+  @ApiBody({ type: UpdateOrderDto })
+  @ApiResponse({ status: 200, description: 'Order updated', type: OrderDto })
+  @ApiResponse({ status: 404, description: 'Order not found' })
+  update(@Param('id', ParseIntPipe) id: number, @Body() order: UpdateOrderDto) {
     const updated = this.ordersService.update(id, order);
     if (!updated) {
       throw new NotFoundException(`Order with ID ${id} not found`);
@@ -63,6 +120,10 @@ export class OrdersController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete an order' })
+  @ApiParam({ name: 'id', description: 'Order ID' })
+  @ApiResponse({ status: 200, description: 'Order deleted' })
+  @ApiResponse({ status: 404, description: 'Order not found' })
   delete(@Param('id', ParseIntPipe) id: number) {
     const deleted = this.ordersService.delete(id);
     if (!deleted) {
