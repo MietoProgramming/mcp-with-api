@@ -1,0 +1,33 @@
+{
+    "name": "mcp-api-server",
+    "version": "1.0.0",
+    "description": "MCP server for interacting with the NestJS API",
+    "type": "module",
+    "main": "dist/index.js",
+    "bin": {
+        "mcp-api-server": "./dist/index.js"
+    },
+    "scripts": {
+        "build": "tsc",
+        "start": "node dist/index.js",
+        "dev": "tsc && node dist/index.js",
+        "watch": "tsc --watch",
+        "config": "node generate-config.cjs"
+    },
+    "keywords": [
+        "mcp",
+        "model-context-protocol",
+        "api",
+        "nestjs"
+    ],
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^0.6.0",
+        "axios": "^1.7.9"
+    },
+    "devDependencies": {
+        "@types/node": "^22.0.0",
+        "typescript": "^5.0.0"
+    }
+}
